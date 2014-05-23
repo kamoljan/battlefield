@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/kamoljan/ikura/api"
-	"github.com/kamoljan/ikura/conf"
+	"github.com/kamoljan/battlefield/api"
+	"github.com/kamoljan/battlefield/conf"
 )
 
 func initStore(path string) {

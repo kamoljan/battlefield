@@ -17,13 +17,10 @@ import (
 	_ "image/jpeg"
 	_ "image/png"
 
-	"labix.org/v2/mgo"
-	"labix.org/v2/mgo/bson"
-
 	"github.com/nfnt/resize"
 
-	"github.com/kamoljan/ikura/conf"
-	"github.com/kamoljan/ikura/json"
+	"github.com/kamoljan/battlefield/conf"
+	"github.com/kamoljan/battlefield/json"
 )
 
 func genPath(file string) string {
@@ -102,15 +99,6 @@ func Put(w http.ResponseWriter, r *http.Request) {
 		Newborn: fileNewborn,
 	}
 	log.Printf("fileOrig=%s,fileBaby=%s,fileInfant=%s,fileNewborn=%s", fileOrig, fileBaby, fileInfant, fileNewborn)
-	/*
-		egg := json.Egg{
-			Egg:     fileOrig,
-			Baby:    fileBaby,
-			Infant:  fileInfant,
-			Newborn: fileNewborn,
-		}
-		err = egg.SaveMeta()
-	*/
 	if err != nil {
 		w.Write(json.Message("ERROR", "Unable to save your image meta into db"))
 	} else {
@@ -153,46 +141,11 @@ func parsePath(eid string) string {
 	return fmt.Sprintf(conf.IkuraStore+"%s/%s/%s", eid[5:7], eid[7:9], eid)
 }
 
-func GetEggBySize(size, id string) (json.Egg, error) {
-	session, err := mgo.Dial(conf.Mongodb)
-	if err != nil {
-		log.Fatal("Unable to connect to DB ", err)
-	}
-
-	defer session.Close()
-
-	// Optional. Switch the session to a monotonic behavior.
-	session.SetMode(mgo.Monotonic, true)
-
-	result := json.Egg{}
-	c := session.DB("sa").C("egg")
-	// err = c.FindId(bson.ObjectIdHex(id)).One(&result)
-	err = c.Find(bson.M{size: id}).One(&result)
-	return result, err
-}
-
 //http://localhost:9090/egg/0001_8787bec619ff019fd17fe02599a384d580bf6779_9BA4AA_400_300?type=baby
 func Get(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", conf.Mime)
 	w.Header().Set("Cache-Control", fmt.Sprintf("max-age=%d", conf.CacheMaxAge))
-	size := r.FormValue("size")
 	eid := html.EscapeString(r.URL.Path[5:]) //cutting "/egg/"
-	if size != "" {
-		d, err := GetEggBySize(size, eid)
-		if err != nil {
-			w.Write(json.Message("ERROR", "Unable to find by size"))
-			return
-		}
-		if size == "baby" {
-			eid = d.Baby
-		} else if size == "infant" {
-			eid = d.Infant
-		} else if size == "newborn" {
-			eid = d.Newborn
-		} else {
-			eid = d.Egg
-		}
-	}
 	log.Println("GET: eid = " + eid)
 	path := parsePath(eid)
 	log.Println("GET: path = " + path)

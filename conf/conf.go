@@ -2,7 +2,7 @@ package conf
 
 const (
 	IkuraId    = 1
-	IkuraStore = "/var/ikura/store/"
+	IkuraStore = "/var/battlefield/store/"
 	IkuraPort  = 9090
 
 	BabyWidth    = 400

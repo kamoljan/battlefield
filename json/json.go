@@ -6,7 +6,7 @@ import (
 
 	"labix.org/v2/mgo"
 
-	"github.com/kamoljan/ikura/conf"
+	"github.com/kamoljan/battlefield/conf"
 )
 
 type Egg struct {
