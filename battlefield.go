@@ -31,10 +31,10 @@ func logHandler(h http.Handler) http.Handler {
 }
 
 func main() {
-	initStore(conf.IkuraStore)
+	initStore(conf.BattlefieldStore)
 	http.HandleFunc("/", api.Put)
 	http.HandleFunc("/egg/", api.Get)
-	err := http.ListenAndServe(fmt.Sprintf(":%d", conf.IkuraPort), logHandler(http.DefaultServeMux))
+	err := http.ListenAndServe(fmt.Sprintf(":%d", conf.BattlefieldPort), logHandler(http.DefaultServeMux))
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}

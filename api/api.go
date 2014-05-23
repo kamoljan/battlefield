@@ -42,6 +42,7 @@ func genFile(eid string, color string, width, height int) string {
  *}
  */
 func Put(w http.ResponseWriter, r *http.Request) {
+	t0 := time.Now()
 	if r.Method != "PUT" {
 		w.Write(json.Message("ERROR", "Not supported Method"))
 		return
@@ -70,14 +71,13 @@ func Put(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-
 	defer r.Body.Close()
+
 	img, _, err := image.Decode(buf)
 	if err != nil {
 		w.Write(json.Message("ERROR", "Unable to decode your image"))
 		return
 	}
-	t0 := time.Now()
 
 	imgBaby := resize.Resize(conf.BabyWidth, 0, img, resize.NearestNeighbor)
 	imgInfant := resize.Resize(conf.InfantWidth, 0, imgBaby, resize.NearestNeighbor)
