@@ -24,13 +24,13 @@ import (
 )
 
 func genPath(file string) string {
-	path := fmt.Sprintf(conf.IkuraStore+"%s/%s/%s", file[5:7], file[7:9], file)
+	path := fmt.Sprintf(conf.BattlefieldStore+"%s/%s/%s", file[5:7], file[7:9], file)
 	log.Println(path)
 	return path
 }
 
 func genFile(eid string, color string, width, height int) string {
-	file := fmt.Sprintf("%04x_%s_%s_%d_%d", conf.IkuraId, eid, color, width, height)
+	file := fmt.Sprintf("%04x_%s_%s_%d_%d", conf.BattlefieldId, eid, color, width, height)
 	log.Println(file)
 	return file
 }
@@ -47,8 +47,6 @@ func Put(w http.ResponseWriter, r *http.Request) {
 		w.Write(json.Message("ERROR", "Not supported Method"))
 		return
 	}
-
-	log.Println(r)
 
 	reader, err := r.MultipartReader()
 	if err != nil {
@@ -138,7 +136,7 @@ func imgToFile(img image.Image, color string) (string, error) {
 }
 
 func parsePath(eid string) string {
-	return fmt.Sprintf(conf.IkuraStore+"%s/%s/%s", eid[5:7], eid[7:9], eid)
+	return fmt.Sprintf(conf.BattlefieldStore+"%s/%s/%s", eid[5:7], eid[7:9], eid)
 }
 
 //http://localhost:9090/egg/0001_8787bec619ff019fd17fe02599a384d580bf6779_9BA4AA_400_300?type=baby

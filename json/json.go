@@ -3,10 +3,6 @@ package json
 import (
 	"encoding/json"
 	"log"
-
-	"labix.org/v2/mgo"
-
-	"github.com/kamoljan/battlefield/conf"
 )
 
 type Egg struct {
@@ -54,23 +50,4 @@ func Message3(status string, result interface{}, message string) []byte {
 		log.Println("Unable to json.Marshal ", err)
 	}
 	return b
-}
-
-func (egg *Egg) SaveMeta() error {
-	session, err := mgo.Dial(conf.Mongodb)
-	if err != nil {
-		log.Fatal("Unable to connect to DB ", err)
-	}
-
-	defer session.Close()
-
-	session.SetMode(mgo.Monotonic, true) // Optional. Switch the session to a monotonic behavior.
-	c := session.DB("sa").C("egg")
-	// i := bson.NewObjectId() // in case we want to know _id
-	// err = c.Insert(bson.M{"_id": i, "egg": &egg.Egg, "baby": &egg.Baby, "infant": &egg.Infant, "newborn": &egg.Newborn})
-	err = c.Insert(&egg)
-	if err != nil {
-		log.Fatal("Unable to save to DB ", err)
-	}
-	return err
 }
