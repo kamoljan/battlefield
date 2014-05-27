@@ -33,6 +33,7 @@ func logHandler(h http.Handler) http.Handler {
 func main() {
 	initStore(conf.BattlefieldStore)
 	http.HandleFunc("/", api.Put)
+	http.HandleFunc("/noimageprocess/", api.PutNoImageProcess)
 	http.HandleFunc("/egg/", api.Get)
 	err := http.ListenAndServe(fmt.Sprintf(":%d", conf.BattlefieldPort), logHandler(http.DefaultServeMux))
 	if err != nil {

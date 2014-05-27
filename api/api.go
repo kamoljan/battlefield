@@ -107,6 +107,60 @@ func Put(w http.ResponseWriter, r *http.Request) {
 	log.Printf("The call took %v to run.\n", t1.Sub(t0))
 }
 
+func PutNoImageProcess(w http.ResponseWriter, r *http.Request) {
+	t0 := time.Now()
+	if r.Method != "PUT" {
+		w.Write(json.Message("ERROR", "Not supported Method"))
+		return
+	}
+
+	reader, err := r.MultipartReader()
+	if err != nil {
+		w.Write(json.Message("ERROR", "Client should support multipart/form-data"))
+		return
+	}
+
+	buf := bytes.NewBufferString("")
+	for {
+		part, err := reader.NextPart()
+		if err == io.EOF {
+			break
+		}
+		if part.FileName() == "" { // if empy skip this iteration
+			continue
+		}
+		_, err = io.Copy(buf, part)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+	defer r.Body.Close()
+
+	img, _, err := image.Decode(buf)
+	if err != nil {
+		w.Write(json.Message("ERROR", "Unable to decode your image"))
+		return
+	}
+
+	fileOrig, err := imgToFile(img, "ACA0AC")
+	if err != nil {
+		w.Write(json.Message("ERROR", "Unable to save your image"))
+	}
+
+	result := json.Result{
+		Newborn: fileOrig,
+	}
+	if err != nil {
+		w.Write(json.Message("ERROR", "Unable to save your image meta into db"))
+	} else {
+		w.Write(json.Message("OK", &result))
+	}
+
+	t1 := time.Now()
+	log.Printf("The call took %v to run.\n", t1.Sub(t0))
+}
+
 func genHash(img image.Image) (string, error) {
 	h := sha1.New()
 	err := jpeg.Encode(h, img, nil)
